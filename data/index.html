@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en">
+  <head>
+	<link rel="shortcut icon" href="favicon.ico">
+	
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+<!--    <link rel="stylesheet" href="latoFontFamily.css"> -->
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="mystyle.css">
+    <!--
+    <link rel="stylesheet" href=".bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href=".mystyle.css">
+	-->
+	
+	<!-- FontAwesome Icons -->
+
+	<link rel="stylesheet" href="font-awesome.min.css">
+
+    <title>WALL-E Controller</title>
+</head>
+<body>
+	
+	<!-- Gamepad Information Overlay
+	<div class="modal fade" id="gamepad-info" tabindex="-1" role="dialog">
+	  <div class="modal-dialog" role="document">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<h5 class="modal-title" id="gamepad-title">Gamepad Support</h5>
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			  <span aria-hidden="true">&times;</span>
+			</button>
+		  </div>
+		  <div class="modal-body">
+			The WALL·E web-interface supports input from standard gamepads, such as the Xbox or PlayStation controllers on all modern browsers.
+			To get started, connect the gamepad to your computer and press any button while the web-interface is open in your browser.
+			<br>
+			<a href="gamepad-layout.jpg" target="_blank">
+				<img id="gamepad-layout" class="modal-image" src="gamepad-layout.jpg">
+			</a>
+		  </div>
+		  <div class="modal-footer">
+			<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		  </div>
+		</div>
+	  </div>
+	</div>
+  -->
+
+	<!-- Main Body Content -->
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col">
+				<!-- Tab Buttons -->
+				<div class="tabbable" id="tabs-937975">
+					<ul class="nav nav-tabs row">
+						<!-- <li class="nav-item col col-md-6 no-padding">
+             <img class="nav-link tab-padding" src="camera.png" href="#tab0" data-toggle="tab" />
+						<!--	<a class="nav-link tab-padding d-block d-md-none" href="#tab0" data-toggle="tab"><i class="fa fa-camera"></i><div class="tab-text">Camera</div></a>
+						</li>
+            --->
+						<li class="nav-item col no-padding">
+             <img class="nav-link tab-padding" src="control.png" href="#tab1" data-toggle="tab" />
+						<!--	<a class="nav-link tab-padding active show" href="#tab1" data-toggle="tab"><i class="fa fa-gamepad"></i><div class="tab-text">Control</div></a> -->
+						</li>
+						<li class="nav-item col no-padding">
+             <img class="nav-link tab-padding" src="servos.png" href="#tab2" data-toggle="tab" />
+						<!--	<a class="nav-link tab-padding" href="#tab2" data-toggle="tab"><i class="fa fa-sliders-h"></i><div class="tab-text">Servos</div></a>  -->
+						</li>
+						<li class="nav-item col no-padding">
+             <img class="nav-link tab-padding" src="animate.png" href="#tab3" data-toggle="tab" />
+						<!--	<a class="nav-link tab-padding" href="#tab3" data-toggle="tab"><i class="fa fa-play-circle"></i><div class="tab-text">Animate</div></a>  -->
+						</li>
+						<li class="nav-item col no-padding">
+             <img class="nav-link tab-padding" src="sounds.png" href="#tab4" data-toggle="tab" />
+							<!-- <a class="nav-link tab-padding" href="#tab4" data-toggle="tab"><i class="fa fa-music"></i><div class="tab-text">Sounds</div></a> -->
+						</li>
+						<li class="nav-item col no-padding">
+             <img class="nav-link tab-padding" src="settings.png" href="#tab5" data-toggle="tab" />
+							<!-- <a id="settings-tab" class="nav-link tab-padding" href="#tab5" data-toggle="tab"><i class="fa fa-tools"></i><div class="tab-text">Settings</div></a> -->
+						</li>
+					</ul>
+
+					<!-- Tab Content -->
+					<div class="tab-content row">
+						
+						<!-- Camera Stream --
+						<div class="tab-pane scroll-pane col-sm-12 col-md-6 d-md-block no-padding" id="tab0">
+							<div class="media">
+								<img id="stream" class="stream{% if cameraActive == 1 %} starting{% endif %}" src="streamimage.jpg">
+							</div>
+							<div class="info-elements">
+								<div class="info-area text-white">
+									Status:
+								</div>
+								<a id="ardu-area" href="#conn-arduino" onclick="$('#settings-tab').trigger('click')" class="info-area{% if connected == 1 %} bg-success{% else %}bg-danger{% endif %} text-white" title="{% if connected == 1 %}Connected{% else %}Disconnected{% endif %}" data-toggle="tooltip" data-placement="top">
+									<i class="fa fa-robot"></i><div id="ardu-text" class="indicator-text">Arduino</div>
+								</a>
+								<span data-toggle="modal" data-target="#gamepad-info">
+									<a id="cont-area" class="info-area bg-danger text-white cursor-pointer" title="Disconnected" data-toggle="tooltip" data-placement="top">
+										<i class="fa fa-gamepad"></i><div id="cont-text" class="indicator-text">Gamepad</div>
+									</a>
+								</span>
+								<div id="batt-area" class="info-area bg-success text-white d-none" title="Battery Level" data-toggle="tooltip" data-placement="top">
+									<i id="batt-icon" class="fa fa-battery-full"></i><div id="batt-text" class="indicator-text">100%</div>
+								</div>
+							</div>
+						</div>
+						-->
+						<!-- Robot Control -->
+						<div class="tab-pane col-sm-12 col-md-6 active tabpane-padding" id="tab1">
+							<div id="joytext" class="joystick-text">x: 0, y: 0</div>
+							<div id="joystick" class="joystick">
+								<div id="limit" class="limit border border-secondary rounded-circle">
+									<div id="base" class="base border border-secondary rounded-circle"></div>
+									<div id="stick" class="stick border border-dark rounded-circle" style="display: none;"></div>
+								</div>
+							</div>
+						</div>
+						
+						<!-- Manual Servo Control -->
+						<div class="tab-pane scroll-pane col-sm-12 col-md-6 tabpane-padding" id="tab2">
+							<div class="container-fluid">
+								<div class="row set-row">
+									<div class="col-xs-12 col-sm-4 set-text"><b>Animation Mode</b></div>
+									<div class="col-xs-12 col-sm-8">
+										<div class="btn-group btn-group-toggle" data-toggle="buttons">
+											<label class="btn btn-warning">
+												<input type="radio" name="options" id="auto-anime" onclick="sendSettings('animeMode',1);servoInputs(0)"> Automatic
+											</label>
+											<label class="btn btn-warning active">
+												<input type="radio" name="options" id="manu-anime" checked  onclick="sendSettings('animeMode',0);servoInputs(1)"> Manual
+											</label>
+										</div>
+									</div>
+								</div>
+								<hr/>
+								<div class="row set-row">
+									<div class="col-xs-12 col-sm-4 set-text">Head Rotation</div>
+									<div class="col-xs-12 col-sm-8">
+										<input id="head-rotation" class="set-slide custom-range" type="range" min="0" max="100" step="1" value="50" onfocus="this.oldvalue = this.value;" onchange="servoControl(this,'G',value)"/>
+									</div>
+								</div>
+								<hr/>
+								<div class="row set-row">
+									<div class="col-xs-12 col-sm-4 set-text">Neck Top</div>
+									<div class="col-xs-12 col-sm-8">
+										<input id="neck-top" class="set-slide custom-range" type="range" min="0" max="100" step="1" value="50" onfocus="this.oldvalue = this.value;" onchange="servoControl(this,'T',value)"/>
+									</div>
+								</div>
+								<div class="row set-row">
+									<div class="col-xs-12 col-sm-4 set-text">Neck Bottom</div>
+									<div class="col-xs-12 col-sm-8">
+										<input id="neck-bottom" class="set-slide custom-range" type="range" min="0" max="100" step="1" value="50" onfocus="this.oldvalue = this.value;" onchange="servoControl(this,'B',value)"/>
+									</div>
+								</div>
+								<div class="row set-row">
+									<div class="col-xs-12 col-sm-4 set-text">Neck Presets</div>
+									<div class="col-xs-12 col-sm-8">
+										<div class="btn-group" role="group">
+											<button type="button" id="head-up" class="btn btn-primary" onclick="servoPresets(this,'head-up','f')">
+												Head Up
+											</button>
+											<button type="button" id="head-neutral" class="btn btn-primary" onclick="servoPresets(this,'head-neutral','g')">
+												Neutral
+											</button>
+											<button type="button" id="head-down" class="btn btn-primary" onclick="servoPresets(this,'head-down','h')">
+												Down
+											</button>
+										</div>
+									</div>
+								</div>
+								<hr/>
+								<div class="row set-row">
+									<div class="col-xs-12 col-sm-4 set-text">Arm Left</div>
+									<div class="col-xs-12 col-sm-8">
+										<input id="arm-left" class="set-slide custom-range" type="range" min="0" max="100" step="1" value="50" onfocus="this.oldvalue = this.value;" onchange="servoControl(this,'L',value)"/>
+									</div>
+								</div>
+								<div class="row set-row">
+									<div class="col-xs-12 col-sm-4 set-text">Arm Right</div>
+									<div class="col-xs-12 col-sm-8">
+										<input id="arm-right" class="set-slide custom-range" type="range" min="0" max="100" step="1" value="50" onfocus="this.oldvalue = this.value;" onchange="servoControl(this,'R',value)"/>
+									</div>
+								</div>
+								<div class="row set-row">
+									<div class="col-xs-12 col-sm-4 set-text">Arm Presets</div>
+									<div class="col-xs-12 col-sm-8">
+										<div class="btn-group" role="group">
+											<button type="button" id="arms-left" class="btn btn-primary" onclick="servoPresets(this,'arms-left','m')">
+												Left
+											</button>
+											<button type="button" id="arms-neutral" class="btn btn-primary" onclick="servoPresets(this,'arms-neutral','n')">
+												Neutral
+											</button>
+											<button type="button" id="arms-right" class="btn btn-primary" onclick="servoPresets(this,'arms-right','b')">
+												Right
+											</button>
+										</div>
+									</div>
+								</div>
+								<hr/>
+								<div class="row set-row">
+									<div class="col-xs-12 col-sm-4 set-text">Eye Left</div>
+									<div class="col-xs-12 col-sm-8">
+										<input id="eye-left" class="set-slide custom-range" type="range" min="0" max="100" step="1" value="50" onfocus="this.oldvalue = this.value;" onchange="servoControl(this,'E',value)"/>
+									</div>
+								</div>
+								<div class="row set-row">
+									<div class="col-xs-12 col-sm-4 set-text">Eye Right</div>
+									<div class="col-xs-12 col-sm-8">
+										<input id="eye-right" class="set-slide custom-range" type="range" min="0" max="100" step="1" value="50" onfocus="this.oldvalue = this.value;" onchange="servoControl(this,'U',value)"/>
+									</div>
+								</div>
+								<div class="row set-row">
+									<div class="col-xs-12 col-sm-4 set-text">Eyebrow Left</div>
+									<div class="col-xs-12 col-sm-8">
+										<input id="eye-right" class="set-slide custom-range" type="range" min="0" max="100" step="1" value="0" onfocus="this.oldvalue = this.value;" onchange="servoControl(this,'C',value)"/>
+									</div>
+								</div>
+								<div class="row set-row">
+									<div class="col-xs-12 col-sm-4 set-text">Eyebrow Right</div>
+									<div class="col-xs-12 col-sm-8">
+										<input id="eye-right" class="set-slide custom-range" type="range" min="0" max="100" step="1" value="0" onfocus="this.oldvalue = this.value;" onchange="servoControl(this,'V',value)"/>
+									</div>
+								</div>
+								<div class="row set-row">
+									<div class="col-xs-12 col-sm-4 set-text">Eye Presets</div>
+									<div class="col-xs-12 col-sm-8">
+										<div class="btn-group" role="group">
+											<button type="button" id="eyes-left" class="btn btn-primary" onclick="servoPresets(this,'eyes-left','j')">
+												Left
+											</button>
+											<button type="button" id="eyes-neutral" class="btn btn-primary" onclick="servoPresets(this,'eyes-neutral','k')">
+												Neutral
+											</button>
+											<button type="button" id="eyes-sad" class="btn btn-primary" onclick="servoPresets(this,'eyes-sad','i')">
+												Sad
+											</button>
+											<button type="button"  id="eyes-right" class="btn btn-primary" onclick="servoPresets(this,'eyes-right','l')">
+												Right
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Animation Selection -->
+						<div class="tab-pane scroll-pane col-sm-12 col-md-6 tabpane-padding" id="tab3">
+							<div class="container-fluid">
+								<!-- Progress Bar Template -->
+								<div class="progress">
+									<div id="anime-progress" class="progress-bar progress-bar-striped notransition" style="width:0%" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+								</div>
+								<br>
+								<!-- List Group Template -->
+								<div class="list-group" id="anime-accordion">
+									<div class="card">
+										<a href="#all-animations" data-toggle="collapse" class="card-header justify-content-between text-muted">ALL ANIMATIONS 
+											<span class="badge badge-info badge-pill">3</span>
+										</a>
+										<div class="collapse show" id="all-animations" data-parent="#anime-accordion">
+											<a href="#" class="list-group-item list-group-item-action" file-name="0" file-length="1.4" onclick="anime(0,1.4)">Reset Servo Positions <i class="entry-time">&nbsp; | &nbsp; 1.4s</i></a>
+											<a href="#" class="list-group-item list-group-item-action" file-name="1" file-length="8.6" onclick="anime(1,8.6)">Bootup Sequence <i class="entry-time">&nbsp; | &nbsp; 8.6s</i></a>
+											<a href="#" class="list-group-item list-group-item-action" file-name="2" file-length="18" onclick="anime(2,18)">Inquisitive Sequence <i class="entry-time">&nbsp; | &nbsp; 18s</i></a>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Sound Selection -->
+						<div class="tab-pane scroll-pane col-sm-12 col-md-6 tabpane-padding" id="tab4">
+							<div class="container-fluid">
+								<!-- Progress Bar Template -->
+								<div class="progress">
+									<div id="audio-progress" class="progress-bar progress-bar-striped notransition" style="width:0%" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+								</div>
+								<br>
+								<!-- List Group Template -->
+								<div class="list-group" id="audio-accordion">
+											<a href="#" class="list-group-item list-group-item-action" file-name="0" file-length="5" onclick="playAudio(0,5)">Power up <i class="entry-time">&nbsp; | &nbsp; 5s</i></a>
+											<a href="#" class="list-group-item list-group-item-action" file-name="1" file-length="1" onclick="playAudio(1,1)">Uh Huh <i class="entry-time">&nbsp; | &nbsp; 1s</i></a>
+											<a href="#" class="list-group-item list-group-item-action" file-name="2" file-length="1" onclick="playAudio(2,1)">Ohhh<i class="entry-time">&nbsp; | &nbsp; 1s</i></a>
+											<a href="#" class="list-group-item list-group-item-action" file-name="3" file-length="1" onclick="playAudio(3,1)">Whoa<i class="entry-time">&nbsp; | &nbsp; 1s</i></a>
+											<a href="#" class="list-group-item list-group-item-action" file-name="4" file-length="1" onclick="playAudio(4,1)">Whistle<i class="entry-time">&nbsp; | &nbsp; 1s</i></a>
+											<a href="#" class="list-group-item list-group-item-action" file-name="5" file-length="1" onclick="playAudio(5,1)">Whistle 2<i class="entry-time">&nbsp; | &nbsp; 1s</i></a>
+											<a href="#" class="list-group-item list-group-item-action" file-name="6" file-length="1" onclick="playAudio(6,1)">Wow<i class="entry-time">&nbsp; | &nbsp; 1s</i></a>
+											<a href="#" class="list-group-item list-group-item-action" file-name="7" file-length="1" onclick="playAudio(7,1)">Wall-E<i class="entry-time">&nbsp; | &nbsp; 1s</i></a>
+											<a href="#" class="list-group-item list-group-item-action" file-name="8" file-length="9" onclick="playAudio(8,9)">Ta dah<i class="entry-time">&nbsp; | &nbsp; 9s</i></a>
+											<a href="#" class="list-group-item list-group-item-action" file-name="9" file-length="3" onclick="playAudio(9,3)">Voicy Eve<i class="entry-time">&nbsp; | &nbsp; 3s</i></a>
+											<a href="#" class="list-group-item list-group-item-action" file-name="10" file-length="1" onclick="playAudio(10,1)">Eve<i class="entry-time">&nbsp; | &nbsp; 1s</i></a>
+											<a href="#" class="list-group-item list-group-item-action" file-name="11" file-length="16" onclick="playAudio(11,16)">Circuit Up<i class="entry-time">&nbsp; | &nbsp; 16s</i></a>
+											<a href="#" class="list-group-item list-group-item-action" file-name="12" file-length="4" onclick="playAudio(12,4)">Warbling<i class="entry-time">&nbsp; | &nbsp; 4s</i></a>
+											<a href="#" class="list-group-item list-group-item-action" file-name="13" file-length="4" onclick="playAudio(13,4)">Yawning<i class="entry-time">&nbsp; | &nbsp; 4s</i></a>
+											<a href="#" class="list-group-item list-group-item-action" file-name="14" file-length="20" onclick="playAudio(14,20)">Annonce 1<i class="entry-time">&nbsp; | &nbsp; 20s</i></a>
+											<a href="#" class="list-group-item list-group-item-action" file-name="15" file-length="12" onclick="playAudio(15,12)">Annonce 2<i class="entry-time">&nbsp; | &nbsp; 12s</i></a>
+											<a href="#" class="list-group-item list-group-item-action" file-name="16" file-length="8" onclick="playAudio(16,8)">Annonce 3<i class="entry-time">&nbsp; | &nbsp; 8s</i></a>
+
+<!--									{% for group in sounds|groupby(0) %}
+										<div class="card">
+											<a href="#{{ group.grouper.lower() }}-audio" data-toggle="collapse" class="card-header justify-content-between text-muted">{{ group.grouper.upper() }} 
+												<span class="badge badge-info badge-pill">{{ group.list|length() }}</span>
+											</a>
+											<div id="{{ group.grouper.lower() }}-audio" class="collapse" data-parent="#audio-accordion">	
+												{% for item in group.list %}
+													<a href="#" class="list-group-item list-group-item-action" file-name="{{ item[1] }}" file-length="{{ item[3] }}" onclick="playAudio('{{ item[1] }}',{{ item[3] }})">{{ item[2] }} <i class="entry-time">&nbsp; | &nbsp;{{ item[3] }}s</i></a>
+												{% endfor %}
+											</div>
+										</div>
+									{% endfor %}
+-->
+								</div>
+                <div class="row set-row">
+									<div class="col-xs-12 col-sm-4 set-text">Volume</div>
+									<div class="col-xs-12 col-sm-8">
+										<input id="neck-bottom" class="set-slide custom-range" type="range" min="0" max="30" step="1" value="10" onfocus="this.oldvalue = this.value;" onchange="servoControl(this,'v',value)"/>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Settings -->
+						<div class="tab-pane scroll-pane col-sm-12 col-md-6 tabpane-padding" id="tab5">
+							<div class="container-fluid">
+								<div class="row set-row d-none">
+									<div class="col-xs-12 col-sm-4 set-text">Sound Mode</div>
+									<div class="col-xs-12 col-sm-8">
+										<div class="btn-group btn-group-toggle" data-toggle="buttons">
+											<label class="btn btn-primary">
+												<input type="radio" name="options" id="auto-sound" onclick="sendSettings('soundMode',1)"> Automatic
+											</label>
+											<label class="btn btn-primary active">
+												<input type="radio" name="options" id="manu-sound" autocomplete="off" checked onclick="sendSettings('soundMode',0)"> Manual
+											</label>
+										</div>
+									</div>
+								</div>
+<!--								<div class="row set-row">
+									<div class="col-xs-12 col-sm-4 set-text">Sound Volume</div>
+									<div class="col-xs-12 col-sm-8">
+										<input id="volume" class="set-slide custom-range" type="range" min="0" max="10" step="1" value="5" onchange="sendSettings('volume',value)"/>
+									</div>
+								</div>
+								<hr/>
+-->
+								<div class="row set-row">
+									<div class="col-xs-12 col-sm-4 set-text">Motor Deadzone</div>
+									<div class="col-xs-12 col-sm-8">
+										<input type="number" min="0" max="250" value="190" class="form-control set-num is-valid" id="motor-offset">
+									</div>
+								</div>
+								<div class="row set-row">
+									<div class="col-xs-12 col-sm-4 set-text">Steering Offset</div>
+									<div class="col-xs-12 col-sm-8">
+										<input type="number" min="-100" max="100" value="0" class="form-control set-num is-valid" id="steer-offset">
+									</div>
+								</div>
+								<div class="row set-row">
+									<div class="col-xs-12 col-sm-4 set-text"></div>
+									<div class="col-xs-12 col-sm-8">
+										<button id="num-update" type="button" class="btn btn-outline-info">Update Now</button>
+									</div>
+								</div>
+								<hr/>
+                  <!--
+								<div class="row set-row">
+									<div class="col-xs-12 col-sm-4 set-text">Select Port</div>
+                  <div class="input-group col-xs-12 col-sm-8">
+										<select class="custom-select set-num" id="port-select">
+											{% if ports %}
+												{% for item in ports %}
+												<option value="{{ loop.index0 }}"{% if loop.index0 == portSelect %} selected{% endif %}>{{ item }}</option>
+												{% endfor %}
+											{% else %}
+												<option disabled selected>No devices found!</option>
+											{% endif %}
+										</select>
+										<div class="input-group-append">
+											<button class="btn btn-outline-info" type="button" onclick="updateSerialList(true)">Reload</button>
+										</div>
+									</div>
+								</div>
+								<div class="row set-row">
+									<div class="col-xs-12 col-sm-4 set-text">Connect Arduino</div>
+									<div class="col-xs-12 col-sm-8">
+											<button id="conn-arduino" type="button" class="btn {% if ports %}{% if connected == 1 %}btn-outline-danger{% else %}btn-outline-info{% endif %}{% else %}btn-outline-secondary disabled{% endif %}" onclick="arduinoConnect(this)">
+												{% if connected == 1 %}Disconnect{% else %}Reconnect{% endif %}
+											</button>
+									</div>
+								</div>
+								<hr/>
+								<div class="row set-row">
+									<div class="col-xs-12 col-sm-4 set-text">MJPG Streamer</div>
+									<div class="col-xs-12 col-sm-8">
+										<button id="conn-streamer" type="button" class="btn btn-outline-info" onclick="sendSettings('streamer',1)">Reactivate</button>
+									</div>
+								</div>
+								<div class="row set-row">
+									<div class="col-xs-12 col-sm-4 set-text">Turn off Raspberry Pi</div>
+									<div class="col-xs-12 col-sm-8">
+										<button id="shutdown" type="button" class="btn btn-outline-danger" onclick="sendSettings('shutdown',1)">Shutdown!</button>
+									</div>
+								</div>
+                -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="d-sm-none d-md-block col-md-6"></div>
+			<div class="col-sm-12 col-md-6 alert-col">
+				<div id="alert-space" class="alert-area"></div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="jquery-3.3.1.min.js"></script>
+    <script src="bootstrap.bundle.min.js"></script>
+    <script src="joystick.js"></script>
+    <script src="joypad.min.js"></script>
+    <script src="main.js"></script>
+
+    <!--
+    <script src="../static/js/jquery-3.3.1.min.js"></script>
+    <script src="../static/js/bootstrap.bundle.min.js"></script>
+    <script src="../static/js/joystick.js"></script>
+    <script src="../static/js/main.js"></script>
+	-->
+	
+</body>
+<footer></footer>
