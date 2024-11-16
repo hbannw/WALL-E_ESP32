@@ -18,9 +18,12 @@ It is necessary to create a file named : settings.h containing the following lin
 #define WIFI_PASSWORD "your wifi password"
 
 The files in the data directory have to be copied to the SPIFFS filesystem on the ESP32
-IIs is possible with Arduino IDE 1.8 and the following tool https://randomnerdtutorials.com/install-esp32-filesystem-uploader-arduino-ide/
+It is possible with Arduino IDE 1.8 and the following tool https://randomnerdtutorials.com/install-esp32-filesystem-uploader-arduino-ide/
 
 you can use you home wifi settings or the shared connection setting from your phone
 
 the files in the sound directory has to be copied to the MicroSD card
 this card has to be inserted in the DFPlayer card
+
+Update 16/11/2024 : Added support for LittleFS
+to upload the files to LittleFS with Arduino IDE 2.x.x, follow this link : https://randomnerdtutorials.com/arduino-ide-2-install-esp32-littlefs/

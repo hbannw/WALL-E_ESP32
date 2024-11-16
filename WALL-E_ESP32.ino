@@ -23,8 +23,12 @@
  * Modified for ESP32 and L298 motor driver
  * added eyebrow control
  * replaced the sound with a DFPlayer mp3 card
- * hbannw 26th February 2024
+ * by hbannw 26th February 2024
+ * added LittleFS filesystem support
   */
+
+// Comment  the next line tu use SPIFFS
+#define USE_LITTLEFS 
 
 #include <Wire.h>
 #include <WiFi.h>
@@ -36,8 +40,11 @@
 #include "DFRobotDFPlayerMini.h"
 #include "settings.h"
 
+#ifdef USE_LITTLEFS
+#include "LittleFS.h"
+#else
 #include "SPIFFS.h"
-
+#endif
 
 
 /// Define pin-mapping
@@ -248,24 +255,35 @@ void initWiFi() {
 }
 
 
-// Initialize SPIFFS
-void initSPIFFS() {
+// Initialize FileSystem
+
+void initFS() {
+#ifdef USE_LITTLEFS
+  if (!LittleFS.begin()) {
+    Serial.println(F("An error has occurred while mounting LittleFS"));
+  }
+  Serial.println(F("LittleFS mounted successfully"));
+  // get file list for testing purpose
+  //File root = LittleFS.open("/");
+
+
+#else
   if (!SPIFFS.begin(false,"/spiffs",30)) {
     Serial.println(F("An error has occurred while mounting SPIFFS"));
   }
   Serial.println(F("SPIFFS mounted successfully"));
-  // get SPIFFS file list for testing purpose
-  /*File root = SPIFFS.open("/");
-
+  // get file list for testing purpose
+  
+  //File root = SPIFFS.open("/");
+#endif
+/*
   File file = root.openNextFile();
-
   while (file) {
-
     Serial.print("FILE: ");
     Serial.println(file.name());
-
     file = root.openNextFile();
-  }*/
+  }
+*/  
 }
 
 
@@ -308,7 +326,7 @@ void setup() {
      myDFPlayer.play(1);  //Play the first mp3
   }
 
-  initSPIFFS();
+  initFS();
 
 
 
@@ -342,12 +360,17 @@ void setup() {
 
   // Init Web server
   // Web Server Root URL
+#ifdef USE_LITTLEFS  
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(LittleFS, "/index.html", "text/html");
+  });
+  server.serveStatic("/", LittleFS, "/");
+#else
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(SPIFFS, "/index.html", "text/html");
   });
-
   server.serveStatic("/", SPIFFS, "/");
-
+#endif
   // Request for the latest sensor readings
   server.on("/readings", HTTP_GET, [](AsyncWebServerRequest *request) {
     String json = "{123}";
