@@ -24,11 +24,16 @@
  * added eyebrow control
  * replaced the sound with a DFPlayer mp3 card
  * by hbannw 26th February 2024
- * added LittleFS filesystem support
+ * 16 november 2024 : added LittleFS filesystem support
+ * 7 december 2024  : some nice additions by RobAllIsGood, thanks
+ *    - Added support for various ESP32 boards (ESP32_C6, ESP32_C3,ESP32_D1_Mini, ESP32_WROVER)
+ *    - added #ifdef around LED_PIN, if not define dont use it (for boards with very few GPIO
+ *    - corrected mySoftwareSerial.begin(9600, SERIAL_8N1,DFPLAYER_RX_PIN , DFPLAYER_TX_PIN); // speed, type, RX, TX, the pins where hardcoded instead of using the #define
+ *    - increased default volume to 25
   */
 
 // Comment  the next line tu use SPIFFS
-#define USE_LITTLEFS 
+#define USE_LITTLEFS
 
 #include <Wire.h>
 #include <WiFi.h>
@@ -47,32 +52,196 @@
 #endif
 
 
-/// Define pin-mapping
 // -- -- -- -- -- -- -- -- -- -- -- -- -- --
+// ONLY USE 1 DEFINITION
+#define ESP32_WROOM
+// #define ESP32_C6_WROOM_DEV
+// #define ESP32_C3_SEEED
+// #define ESP32_D1_MINI
+// #define ESP32_WROVER
 
-// Motors with L298N
-#define PROG_RUN
+// pin mapping for ESP32 WROOM
+
+#ifdef ESP32_WROOM
+// 12v Motors with L298N
 #define DIRA1 17
 #define DIRB1 16
 #define ENABLE1 12
 #define DIRA2 27
 #define DIRB2 14
 #define ENABLE2 13
+
+// PCA9685
+#define SERVO_ENABLE_PIN 18  // Servo shield output enable pin
+#define PCA_SDA          21
+#define PCL_SCL          22
+// #define PCL_VCC33V
+// #define PCL_GND
+
+// DFPlayer Communication
+#define DFPLAYER_RX_PIN 23  // use Resitors 1k-gnd, 660, VCC
+#define DFPLAYER_TX_PIN 19
+
+#define AUDIO_OUTPUT_PIN 25
+
+// Comment out if no pin available
+#define LED_PIN 12  // use led on the PWM board
+
+// battery pin, only used if enabled below
+#define BATTERY_LEVEL_PIN A2
+
+#endif
+
+// -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+// pin mapping for ESP32 C6 WROOM DEV
+#ifdef ESP32_C6_WROOM_DEV
+// 12v Motors with L298N
+#define DIRA1 18  
+#define DIRB1 19  
+#define ENABLE1 20 //Changed
+#define DIRA2 21 //Changed
+#define DIRB2 22  //Changed
+#define ENABLE2 23  //Changed
+
+// PCA9685
+#define SERVO_ENABLE_PIN 1  // Servo shield output enable pin, not required ?
+#define PIN_SDA  6   // used without definition
+#define PIN_SCL  7   // used without definition
+// #define PCL_VCC33V
+// #define PCL_GND
+
+// DFPlayer Communication
+#define DFPLAYER_RX_PIN 10  // Changed   // use Resitors 1k-gnd, 660, VCC
+#define DFPLAYER_TX_PIN 11
+ 
+// #define AUDIO_OUTPUT_PIN 25  // TBC, not used?
+
+// Comment out if no pin available
+#define LED_PIN 9  // Not onboard
+
+
+// battery pin, only used if enabled below
+// Assume GPIO04 A1 CH5, TBC
+#define BATTERY_LEVEL_PIN A1  // tbc
+
+#endif
+
+// -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+// pin mapping for ESP32_C3_SEEED
+#ifdef ESP32_C3_SEEED
+// 12v Motors with L298N
+#define DIRA1 D0  
+#define DIRB1 D1  
+#define ENABLE1 D2 //Changed
+#define DIRA2 D3 //Changed
+#define DIRB2 D8  //Changed
+#define ENABLE2 D10  //Changed
+
+// PCA9685
+#define SERVO_ENABLE_PIN D9  // Servo shield output enable pin, not required ?
+#define PIN_SDA  D4   // used without definition
+#define PIN_SCL  D5   // used without definition
+// #define PCL_VCC33V
+// #define PCL_GND
+
+// DFPlayer Communication
+#define DFPLAYER_RX_PIN D7  // Changed   
+#define DFPLAYER_TX_PIN D6  // use Resitors 1k-gnd, 660, VCC
+
+// #define AUDIO_OUTPUT_PIN 25  // TBC, not used?
+
+// Comment out if no pin available
+// #define LED_PIN 1
+
+// battery pin, only used if enabled below
+// Assume GPIO04 A1 CH5, TBC
+// #define BATTERY_LEVEL_PIN A2  // tbc
+
+#endif
+
+// -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+// pin mapping for ESP32_D1_MINI
+#ifdef ESP32_D1_MINI
+// 12v Motors with L298N
+#define DIRA1 32  
+#define DIRB1 12  
+#define ENABLE1 4 //Changed
+#define DIRA2 15 //Changed
+#define DIRB2 27  //Changed
+#define ENABLE2 0  //Changed
+
+// PCA9685
+#define SERVO_ENABLE_PIN 26  // Servo shield output enable pin, not required ?
+#define PIN_SDA  21   // used without definition
+#define PIN_SCL  22   // used without definition
+
+
+// DFPlayer Communication
+#define DFPLAYER_RX_PIN 16  // Changed   
+#define DFPLAYER_TX_PIN 17  // use Resitors 1k-gnd, 660, VCC
+
+// #define AUDIO_OUTPUT_PIN 25  // TBC, not used?
+
+// Comment out if no pin available
+#define LED_PIN 2
+
+// battery pin, only used if enabled below
+// Assume GPIO04 A1 CH5, TBC
+#define BATTERY_LEVEL_PIN 36  // tbc
+
+#endif
+
+// -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+// pin mapping for ESP32_WROVER
+#ifdef ESP32_WROVER
+// 12v Motors with L298N
+#define DIRA1 12  
+#define DIRB1 13  
+#define ENABLE1 14 //Changed
+#define DIRA2 25 //Changed
+#define DIRB2 26  //Changed
+#define ENABLE2 27  //Changed
+
+// PCA9685
+#define SERVO_ENABLE_PIN 23  // Servo shield output enable pin, not required ?
+#define PIN_SDA  21   // used without definition
+#define PIN_SCL  22   // used without definitionDFPLAYER_RX_PIN
+// #define PCL_VCC33V
+// #define PCL_GND
+
+// DFPlayer Communication
+#define DFPLAYER_RX_PIN 18  // Changed   // use Resitors 1k-gnd, 660, VCC
+#define DFPLAYER_TX_PIN 19
+
+// #define AUDIO_OUTPUT_PIN 25  //  Not used
+
+
+// Comment out if no pin available
+// #define LED_PIN 2  // Not onboard
+
+
+// battery pin, only used if enabled below
+// Assume GPIO04 A1 CH5, TBC
+// #define BATTERY_LEVEL_PIN A2  // tbc
+
+#endif
+
+// -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+
+// Motors with L298N settings
+#define PROG_RUN
 #define MAX_SPEED 240       // sets speed of DC  motors
 #define MAX_BACK_SPEED 240  // sets speed of DC  motors for backward movement
 #define MAX_SPEED_OFFSET 0  // @ 20 Difference between left and right motor
 #define turn_amount 750
 
-#define SERVO_ENABLE_PIN 18  // Servo shield output enable pin
 
-// DFPlayer Communication
-#define DFPLAYER_RX_PIN 23
-#define DFPLAYER_TX_PIN 19
-
-#define AUDIO_OUTPUT_PIN 25
-
-#define LED_PIN 12  // use led on the PWM board
-
+// DFPlayer Speed
 #define NORMAL_SPEED 1  // These are the playback speeds, change to
 #define FAST_SPEED 1.5  // see the effect on the sound sample. 1 is default speed
 #define SLOW_SPEED 2    // 0.75  // >1 faster, <1 slower, 2 would be twice as fast, 0.5 half as fast
@@ -82,7 +251,7 @@
  *
  *   .------R1-----.-------R2------.     | The diagram to the left shows the  |
  *   |             |               |     | potential divider circuit used by  |
- * V_Raw     Analogue pin A2      GND    | the battery level detection system |
+ * V_Raw     Analogue pin Ax      GND    | the battery level detection system |
  *
  * @note The scaling factor is calculated according to ratio of the two resistors:
  *       DIVIDER_SCALING_FACTOR = R2 / (R1 + R2)
@@ -92,7 +261,6 @@
  */
 //#define BAT_L
 #ifdef BAT_L
-#define BATTERY_LEVEL_PIN A2
 #define BATTERY_MAX_VOLTAGE 12.6
 #define BATTERY_MIN_VOLTAGE 10.2
 #define DIVIDER_SCALING_FACTOR 0.3197
@@ -122,7 +290,7 @@ U8G2_SH1106_128X64_NONAME_1_HW_I2C u8g2(U8G2_R0, 10);
 
 /// Define other constants
 // -- -- -- -- -- -- -- -- -- -- -- -- -- --
-#define NUMBER_OF_SERVOS 9       // Number of servo motors
+#define NUMBER_OF_SERVOS 9       // Number of servo motors, 7 without eyelids, 9 with
 #define SERVO_UPDATE_TIME 10     // Time in milliseconds of how often to update servo and motor positions
 #define SERVO_OFF_TIME 6000      // Turn servo motors off after 6 seconds
 #define STATUS_CHECK_TIME 10000  // Time in milliseconds of how often to check robot status (eg. battery level)
@@ -151,7 +319,9 @@ boolean soundPlaying = false;
 
 boolean isSound = true;  // Assume sound effects are available
 // Create Serial comm and DFPlayer
+
 HardwareSerial mySoftwareSerial(1);
+
 DFRobotDFPlayerMini myDFPlayer;
 
 
@@ -237,21 +407,22 @@ void initWiFi() {
   while (WiFi.status() != WL_CONNECTED) {
     Serial.print('.');
     if (ledMode == true) {
-      ledMode= false;
+      ledMode = false;
+#ifdef LED_PIN
       pwm.setPin(LED_PIN, 0);
+#endif
     } else {
       ledMode = true;
-      pwm.setPWM(LED_PIN,0,512);
+#ifdef LED_PIN
+      pwm.setPWM(LED_PIN, 0, 512);
+#endif
     }
 
     delay(1000);
-
   }
   Serial.print(F("Current IP : "));
   Serial.println(WiFi.localIP());
   // send current IP to mail recipient
-
-
 }
 
 
@@ -268,26 +439,30 @@ void initFS() {
 
 
 #else
-  if (!SPIFFS.begin(false,"/spiffs",30)) {
+  if (!SPIFFS.begin(false, "/spiffs", 30)) {
     Serial.println(F("An error has occurred while mounting SPIFFS"));
   }
   Serial.println(F("SPIFFS mounted successfully"));
   // get file list for testing purpose
-  
+
   //File root = SPIFFS.open("/");
 #endif
-/*
+  /*
   File file = root.openNextFile();
   while (file) {
     Serial.print("FILE: ");
     Serial.println(file.name());
     file = root.openNextFile();
   }
-*/  
+*/
 }
 
 
 void setup() {
+ // Initialize serial communication for debugging
+  Serial.begin(115200);
+  Serial.println(F("--- Wall-E Control Sketch ---"));
+
 
   // Output Enable (EO) pin for the servo motors
   pinMode(SERVO_ENABLE_PIN, OUTPUT);
@@ -302,12 +477,8 @@ void setup() {
     pwm.setPin(i, 0);
   }
 
-  // Initialize serial communication for debugging
-  Serial.begin(115200);
-  Serial.println(F("--- Wall-E Control Sketch ---"));
-
-    // Initialize DFPlayer
-  mySoftwareSerial.begin(9600, SERIAL_8N1, 25, 26);  // speed, type, RX, TX
+  // Initialize DFPlayer
+  mySoftwareSerial.begin(9600, SERIAL_8N1,DFPLAYER_RX_PIN , DFPLAYER_TX_PIN);  // speed, type, RX, TX
   if (!myDFPlayer.begin(mySoftwareSerial)) {         //Use softwareSerial to communicate with mp3.
     // If failed, no sound available : continue
     isSound = false;
@@ -318,14 +489,14 @@ void setup() {
     myDFPlayer.setTimeOut(500);  //Set serial communictaion time out 500ms
 
     //----Set volume----
-    myDFPlayer.volume(10);    //Set volume value (0~30).
+    myDFPlayer.volume(25);    //Set volume value (0~30).
     myDFPlayer.volumeUp();    //Volume Up
     myDFPlayer.volumeDown();  //Volume Down
     myDFPlayer.EQ(DFPLAYER_EQ_NORMAL);
     myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
-     myDFPlayer.play(1);  //Play the first mp3
+    myDFPlayer.play(1);  //Play the first mp3
   }
-
+  
   initFS();
 
 
@@ -360,7 +531,7 @@ void setup() {
 
   // Init Web server
   // Web Server Root URL
-#ifdef USE_LITTLEFS  
+#ifdef USE_LITTLEFS
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(LittleFS, "/index.html", "text/html");
   });
@@ -383,7 +554,7 @@ void setup() {
   server.on("/animate", onAnimate);
   server.on("/settings", onSettings);
   server.on("/audio", onAudio);
- 
+
   // Start server
   server.begin();
 
@@ -668,237 +839,239 @@ void evaluateSerial() {
 
   else if (firstChar == '!') {  // Play sound
     soundPlaying = true;
-     myDFPlayer.play(number+1);  //Play the corresponding mp3
-  }   else if (firstChar == 'v') {  // Set volume
-     myDFPlayer.volume(number);  //Set the volume to the value
+    myDFPlayer.play(number + 1);  //Play the corresponding mp3
+  } else if (firstChar == 'v') {  // Set volume
+    myDFPlayer.volume(number);    //Set the volume to the value
   }
 }
 
 
-  // -------------------------------------------------------------------
-  /// Sequence and generate animations
-  // -------------------------------------------------------------------
+// -------------------------------------------------------------------
+/// Sequence and generate animations
+// -------------------------------------------------------------------
 
-  void manageAnimations() {
-    // If we are running an animation
+void manageAnimations() {
+  // If we are running an animation
+  // -- -- -- -- -- -- -- -- -- -- -- -- -- --
+  if ((queue.size() > 0) && (animeTimer <= millis())) {
+    // Set the next waypoint time
+    animation_t newValues = queue.pop();
+    animeTimer = millis() + newValues.timer;
+
+    // Set all the joint positions
+    for (int i = 0; i < NUMBER_OF_SERVOS; i++) {
+      // Scale the positions using the servo calibration values
+      setpos[i] = int(newValues.servos[i] * 0.01 * (preset[i][1] - preset[i][0]) + preset[i][0]);
+    }
+
+
+    // If we are in autonomous mode and no movements are queued, generate random movements
     // -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    if ((queue.size() > 0) && (animeTimer <= millis())) {
-      // Set the next waypoint time
-      animation_t newValues = queue.pop();
-      animeTimer = millis() + newValues.timer;
+  } else if (autoMode && queue.empty() && (animeTimer <= millis())) {
 
-      // Set all the joint positions
-      for (int i = 0; i < NUMBER_OF_SERVOS; i++) {
-        // Scale the positions using the servo calibration values
-        setpos[i] = int(newValues.servos[i] * 0.01 * (preset[i][1] - preset[i][0]) + preset[i][0]);
-      }
+    // For each of the servos
+    for (int i = 0; i < NUMBER_OF_SERVOS; i++) {
 
+      // Randomly determine whether or not to update the servo
+      if (random(2) == 1) {
 
-      // If we are in autonomous mode and no movements are queued, generate random movements
-      // -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    } else if (autoMode && queue.empty() && (animeTimer <= millis())) {
+        // For most of the servo motors
+        if (i == 0 || i == 1 || i == 2 || i >= 5) {
 
-      // For each of the servos
-      for (int i = 0; i < NUMBER_OF_SERVOS; i++) {
+          // Randomly determine the new position
+          unsigned int min = preset[i][0];
+          unsigned int max = preset[i][1];
+          if (min > max) {
+            min = max;
+            max = preset[i][0];
+          }
 
-        // Randomly determine whether or not to update the servo
-        if (random(2) == 1) {
+          setpos[i] = random(min, max + 1);
 
-          // For most of the servo motors
-          if (i == 0 || i == 1 || i == 2 || i >= 5) {
+          // Since the eyes should work together, only look at one of them
+        } else if (i == 3) {
 
-            // Randomly determine the new position
-            unsigned int min = preset[i][0];
-            unsigned int max = preset[i][1];
-            if (min > max) {
-              min = max;
-              max = preset[i][0];
-            }
+          int midPos1 = int((preset[i][1] - preset[i][0]) * 0.4 + preset[i][0]);
+          int midPos2 = int((preset[i + 1][1] - preset[i + 1][0]) * 0.4 + preset[i + 1][0]);
 
-            setpos[i] = random(min, max + 1);
+          // Determine which type of eye movement to do
+          // Both eye move downwards
+          if (random(2) == 1) {
+            setpos[i] = random(midPos1, preset[i][0]);
+            float multiplier = (setpos[i] - midPos1) / float(preset[i][0] - midPos1);
+            setpos[i + 1] = ((1 - multiplier) * (midPos2 - preset[i + 1][0])) + preset[i + 1][0];
 
-            // Since the eyes should work together, only look at one of them
-          } else if (i == 3) {
-
-            int midPos1 = int((preset[i][1] - preset[i][0]) * 0.4 + preset[i][0]);
-            int midPos2 = int((preset[i + 1][1] - preset[i + 1][0]) * 0.4 + preset[i + 1][0]);
-
-            // Determine which type of eye movement to do
-            // Both eye move downwards
-            if (random(2) == 1) {
-              setpos[i] = random(midPos1, preset[i][0]);
-              float multiplier = (setpos[i] - midPos1) / float(preset[i][0] - midPos1);
-              setpos[i + 1] = ((1 - multiplier) * (midPos2 - preset[i + 1][0])) + preset[i + 1][0];
-
-              // Both eyes move in opposite directions
-            } else {
-              setpos[i] = random(midPos1, preset[i][0]);
-              float multiplier = (setpos[i] - preset[i][1]) / float(preset[i][0] - preset[i][1]);
-              setpos[i + 1] = (multiplier * (preset[i + 1][1] - preset[i + 1][0])) + preset[i + 1][0];
-            }
+            // Both eyes move in opposite directions
+          } else {
+            setpos[i] = random(midPos1, preset[i][0]);
+            float multiplier = (setpos[i] - preset[i][1]) / float(preset[i][0] - preset[i][1]);
+            setpos[i + 1] = (multiplier * (preset[i + 1][1] - preset[i + 1][0])) + preset[i + 1][0];
           }
         }
-        //Serial.print(setpos[i]);
-        //Serial.print(",");
       }
-      //Serial.println();
-
-      // Finally, figure out the amount of time until the next movement should be done
-      animeTimer = millis() + random(500, 3000);
+      //Serial.print(setpos[i]);
+      //Serial.print(",");
     }
+    //Serial.println();
+
+    // Finally, figure out the amount of time until the next movement should be done
+    animeTimer = millis() + random(500, 3000);
   }
+}
 
 
 
-  // -------------------------------------------------------------------
-  /// Manage the movement of the servo motors
-  ///
-  /// @param  dt  Time in milliseconds since function was last called
-  ///
-  /// This function uses the formulae:
-  ///   (s = position, v = velocity, a = acceleration, t = time)
-  ///   s = v^2 / (2*a)  <- to figure out whether to start slowing down
-  ///   v = v + a*t      <- to calculate new servo velocity
-  ///   s = s + v*t      <- to calculate new servo position
-  // -------------------------------------------------------------------
+// -------------------------------------------------------------------
+/// Manage the movement of the servo motors
+///
+/// @param  dt  Time in milliseconds since function was last called
+///
+/// This function uses the formulae:
+///   (s = position, v = velocity, a = acceleration, t = time)
+///   s = v^2 / (2*a)  <- to figure out whether to start slowing down
+///   v = v + a*t      <- to calculate new servo velocity
+///   s = s + v*t      <- to calculate new servo position
+// -------------------------------------------------------------------
 
-  void manageServos(float dt) {
-    bool moving = false;
+void manageServos(float dt) {
+  bool moving = false;
 
-    // For each of the servo motors
-    for (int i = 0; i < NUMBER_OF_SERVOS; i++) {
+  // For each of the servo motors
+  for (int i = 0; i < NUMBER_OF_SERVOS; i++) {
 
-      float posError = setpos[i] - curpos[i];
+    float posError = setpos[i] - curpos[i];
 
-      // If position error is above the threshold
-      if (abs(posError) > CONTROLLER_THRESHOLD && (setpos[i] != -1)) {
+    // If position error is above the threshold
+    if (abs(posError) > CONTROLLER_THRESHOLD && (setpos[i] != -1)) {
 
-        digitalWrite(SERVO_ENABLE_PIN, LOW);
-        moving = true;
+      digitalWrite(SERVO_ENABLE_PIN, LOW);
+      moving = true;
 
-        // Determine motion direction
-        bool dir = true;
-        if (posError < 0) dir = false;
+      // Determine motion direction
+      bool dir = true;
+      if (posError < 0) dir = false;
 
-        // Determine whether to accelerate or decelerate
-        float acceleration = accell[i];
-        if ((curvel[i] * curvel[i] / (2 * accell[i])) > abs(posError)) acceleration = -accell[i];
+      // Determine whether to accelerate or decelerate
+      float acceleration = accell[i];
+      if ((curvel[i] * curvel[i] / (2 * accell[i])) > abs(posError)) acceleration = -accell[i];
 
-        // Update the current velocity
-        if (dir) curvel[i] += acceleration * dt / 1000.0;
-        else curvel[i] -= acceleration * dt / 1000.0;
-
-        // Limit Velocity
-        if (curvel[i] > maxvel[i]) curvel[i] = maxvel[i];
-        if (curvel[i] < -maxvel[i]) curvel[i] = -maxvel[i];
-
-        float dP = curvel[i] * dt / 1000.0;
-
-        if (abs(dP) < abs(posError)) curpos[i] += dP;
-        else curpos[i] = setpos[i];
-
-        pwm.setPWM(i, 0, curpos[i]);
-
-      } else {
-        curvel[i] = 0;
-      }
-    }
-
-    // Disable servos if robot is not moving
-    // This helps prevents the motors from overheating
-    if (moving) motorTimer = millis();
-    else if (millis() - motorTimer >= SERVO_OFF_TIME) {
-      //digitalWrite(SERVO_ENABLE_PIN, HIGH);
-      for (int i = 0; i < NUMBER_OF_SERVOS; i++) {
-        pwm.setPin(i, 0);
-      }
-    }
-  }
-
-
-
-  // -------------------------------------------------------------------
-  /// Servo "Soft Start" function
-  ///
-  /// This function tries to start the servos up servo gently,
-  /// reducing the sudden jerking motion which usually occurs
-  /// when the motors power up for the first time.
-  ///
-  /// @param  targetPos  The target position of the servos after startup
-  /// @param  timeMs     Time in milliseconds in which soft start should complete
-  // -------------------------------------------------------------------
-
-  void softStart(animation_t targetPos, int timeMs) {
-    for (int i = 0; i < NUMBER_OF_SERVOS; i++) {
-      if (targetPos.servos[i] >= 0) {
-        curpos[i] = int(targetPos.servos[i] * 0.01 * (preset[i][1] - preset[i][0]) + preset[i][0]);
-
-        unsigned long endTime = millis() + timeMs / NUMBER_OF_SERVOS;
-
-        while (millis() < endTime) {
-          pwm.setPWM(i, 0, curpos[i]);
-          delay(10);
-          pwm.setPin(i, 0);
-          delay(50);
-        }
-        pwm.setPWM(i, 0, curpos[i]);
-        setpos[i] = curpos[i];
-      }
-    }
-  }
-
-
-
-  // -------------------------------------------------------------------
-  /// Manage the movement of the main motors
-  ///
-  /// @param  dt  Time in milliseconds since function was last called
-  // -------------------------------------------------------------------
-
-  void manageMotors(float dt) {
-    // Update Main Motor Values
-    setpos[NUMBER_OF_SERVOS] = moveValue - turnValue;
-    setpos[NUMBER_OF_SERVOS + 1] = moveValue + turnValue;
-
-    // Apply turn offset (motor trim) only when motors are active
-    if (setpos[NUMBER_OF_SERVOS] != 0) setpos[NUMBER_OF_SERVOS] -= turnOffset;
-    if (setpos[NUMBER_OF_SERVOS + 1] != 0) setpos[NUMBER_OF_SERVOS + 1] += turnOffset;
-
-    for (int i = NUMBER_OF_SERVOS; i < NUMBER_OF_SERVOS + 2; i++) {
-
-      float velError = setpos[i] - curvel[i];
-
-      // If velocity error is above the threshold
-      if (abs(velError) > CONTROLLER_THRESHOLD && (setpos[i] != -1)) {
-
-        // Determine whether to accelerate or decelerate
-        float acceleration = accell[i];
-        if (setpos[i] < curvel[i] && curvel[i] >= 0) acceleration = -accell[i];
-        else if (setpos[i] < curvel[i] && curvel[i] < 0) acceleration = -accell[i];
-        else if (setpos[i] > curvel[i] && curvel[i] < 0) acceleration = accell[i];
-
-        // Update the current velocity
-        float dV = acceleration * dt / 1000.0;
-        if (abs(dV) < abs(velError)) curvel[i] += dV;
-        else curvel[i] = setpos[i];
-      } else {
-        curvel[i] = setpos[i];
-      }
-
-      // Apply deadzone offset
-      if (curvel[i] > 0) curvel[i] += motorDeadzone;
-      else if (curvel[i] < 0) curvel[i] -= motorDeadzone;
+      // Update the current velocity
+      if (dir) curvel[i] += acceleration * dt / 1000.0;
+      else curvel[i] -= acceleration * dt / 1000.0;
 
       // Limit Velocity
       if (curvel[i] > maxvel[i]) curvel[i] = maxvel[i];
       if (curvel[i] < -maxvel[i]) curvel[i] = -maxvel[i];
+
+      float dP = curvel[i] * dt / 1000.0;
+
+      if (abs(dP) < abs(posError)) curpos[i] += dP;
+      else curpos[i] = setpos[i];
+
+      pwm.setPWM(i, 0, curpos[i]);
+
+    } else {
+      curvel[i] = 0;
+    }
+  }
+
+  // Disable servos if robot is not moving
+  // This helps prevents the motors from overheating
+  if (moving) motorTimer = millis();
+  else if (millis() - motorTimer >= SERVO_OFF_TIME) {
+    //digitalWrite(SERVO_ENABLE_PIN, HIGH);
+    for (int i = 0; i < NUMBER_OF_SERVOS; i++) {
+      pwm.setPin(i, 0);
+    }
+  }
+}
+
+
+
+// -------------------------------------------------------------------
+/// Servo "Soft Start" function
+///
+/// This function tries to start the servos up servo gently,
+/// reducing the sudden jerking motion which usually occurs
+/// when the motors power up for the first time.
+///
+/// @param  targetPos  The target position of the servos after startup
+/// @param  timeMs     Time in milliseconds in which soft start should complete
+// -------------------------------------------------------------------
+
+void softStart(animation_t targetPos, int timeMs) {
+  for (int i = 0; i < NUMBER_OF_SERVOS; i++) {
+    if (targetPos.servos[i] >= 0) {
+      curpos[i] = int(targetPos.servos[i] * 0.01 * (preset[i][1] - preset[i][0]) + preset[i][0]);
+
+      unsigned long endTime = millis() + timeMs / NUMBER_OF_SERVOS;
+
+      while (millis() < endTime) {
+        pwm.setPWM(i, 0, curpos[i]);
+        delay(10);
+        pwm.setPin(i, 0);
+        delay(50);
+      }
+      pwm.setPWM(i, 0, curpos[i]);
+      setpos[i] = curpos[i];
+    }
+  }
+}
+
+
+
+// -------------------------------------------------------------------
+/// Manage the movement of the main motors
+///
+/// @param  dt  Time in milliseconds since function was last called
+// -------------------------------------------------------------------
+
+void manageMotors(float dt) {
+  // Update Main Motor Values
+  setpos[NUMBER_OF_SERVOS] = moveValue - turnValue;
+  setpos[NUMBER_OF_SERVOS + 1] = moveValue + turnValue;
+
+  // Apply turn offset (motor trim) only when motors are active
+  if (setpos[NUMBER_OF_SERVOS] != 0) setpos[NUMBER_OF_SERVOS] -= turnOffset;
+  if (setpos[NUMBER_OF_SERVOS + 1] != 0) setpos[NUMBER_OF_SERVOS + 1] += turnOffset;
+
+  for (int i = NUMBER_OF_SERVOS; i < NUMBER_OF_SERVOS + 2; i++) {
+
+    float velError = setpos[i] - curvel[i];
+
+    // If velocity error is above the threshold
+    if (abs(velError) > CONTROLLER_THRESHOLD && (setpos[i] != -1)) {
+
+      // Determine whether to accelerate or decelerate
+      float acceleration = accell[i];
+      if (setpos[i] < curvel[i] && curvel[i] >= 0) acceleration = -accell[i];
+      else if (setpos[i] < curvel[i] && curvel[i] < 0) acceleration = -accell[i];
+      else if (setpos[i] > curvel[i] && curvel[i] < 0) acceleration = accell[i];
+
+      // Update the current velocity
+      float dV = acceleration * dt / 1000.0;
+      if (abs(dV) < abs(velError)) curvel[i] += dV;
+      else curvel[i] = setpos[i];
+    } else {
+      curvel[i] = setpos[i];
     }
 
-    // Update motor speeds
-    motorL.setSpeed(curvel[NUMBER_OF_SERVOS]);
-    motorR.setSpeed(curvel[NUMBER_OF_SERVOS + 1]);
-    pwm.setPWM(LED_PIN, 0, abs(curvel[NUMBER_OF_SERVOS])*2);
-    /* // debugging
+    // Apply deadzone offset
+    if (curvel[i] > 0) curvel[i] += motorDeadzone;
+    else if (curvel[i] < 0) curvel[i] -= motorDeadzone;
+
+    // Limit Velocity
+    if (curvel[i] > maxvel[i]) curvel[i] = maxvel[i];
+    if (curvel[i] < -maxvel[i]) curvel[i] = -maxvel[i];
+  }
+
+  // Update motor speeds
+  motorL.setSpeed(curvel[NUMBER_OF_SERVOS]);
+  motorR.setSpeed(curvel[NUMBER_OF_SERVOS + 1]);
+#ifdef LED_PIN
+  pwm.setPWM(LED_PIN, 0, abs(curvel[NUMBER_OF_SERVOS]) * 2);
+#endif
+  /* // debugging
     if (curvel[NUMBER_OF_SERVOS] != oldCurvel) {
       Serial.print("Motor values : ");
       Serial.print(curvel[NUMBER_OF_SERVOS]);
@@ -906,77 +1079,77 @@ void evaluateSerial() {
       Serial.println(curvel[NUMBER_OF_SERVOS + 1]);
       oldCurvel = curvel[NUMBER_OF_SERVOS];
     }*/
-  }
+}
 
 
 
-  // -------------------------------------------------------------------
-  /// Battery level detection
-  // -------------------------------------------------------------------
+// -------------------------------------------------------------------
+/// Battery level detection
+// -------------------------------------------------------------------
 
 #ifdef BAT_L
-  void checkBatteryLevel() {
-    // Read the analogue pin and calculate battery voltage
-    float voltage = analogRead(BATTERY_LEVEL_PIN) * 5 / 1024.0;
-    voltage = voltage / DIVIDER_SCALING_FACTOR;
-    int percentage = int(100 * (voltage - BATTERY_MIN_VOLTAGE) / float(BATTERY_MAX_VOLTAGE - BATTERY_MIN_VOLTAGE));
+void checkBatteryLevel() {
+  // Read the analogue pin and calculate battery voltage
+  float voltage = analogRead(BATTERY_LEVEL_PIN) * 5 / 1024.0;
+  voltage = voltage / DIVIDER_SCALING_FACTOR;
+  int percentage = int(100 * (voltage - BATTERY_MIN_VOLTAGE) / float(BATTERY_MAX_VOLTAGE - BATTERY_MIN_VOLTAGE));
 
 // Update the oLed Display if installed
 #ifdef OLED
-    displayLevel(percentage);
+  displayLevel(percentage);
 #endif
 
-    // Send the percentage via serial
-    Serial.print(F("Battery_"));
-    Serial.println(percentage);
+  // Send the percentage via serial
+  Serial.print(F("Battery_"));
+  Serial.println(percentage);
+}
+#endif
+
+
+// -------------------------------------------------------------------
+/// Main program loop
+// -------------------------------------------------------------------
+
+void loop() {
+
+  if (soundPlaying) {
+    // Has it completed?
+    //      DacAudio.FillBuffer();
   }
-#endif
+
+  // Read any new serial messages
+  // -- -- -- -- -- -- -- -- -- -- -- -- -- --
+  if (Serial.available() > 0) {
+    readSerial();
+  }
 
 
-  // -------------------------------------------------------------------
-  /// Main program loop
-  // -------------------------------------------------------------------
-
-  void loop() {
-
-    if (soundPlaying) {
-      // Has it completed?
-//      DacAudio.FillBuffer();
-    }
-
-    // Read any new serial messages
-    // -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    if (Serial.available() > 0) {
-      readSerial();
-    }
+  // Load or generate new animations
+  // -- -- -- -- -- -- -- -- -- -- -- -- -- --
+  manageAnimations();
 
 
-    // Load or generate new animations
-    // -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    manageAnimations();
+  // Move Servos and wheels at regular time intervals
+  // -- -- -- -- -- -- -- -- -- -- -- -- -- --
+  if (millis() - updateTimer >= SERVO_UPDATE_TIME) {
+    updateTimer = millis();
 
+    unsigned long newTime = micros();
+    float dt = (newTime - lastTime) / 1000.0;
+    lastTime = newTime;
 
-    // Move Servos and wheels at regular time intervals
-    // -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    if (millis() - updateTimer >= SERVO_UPDATE_TIME) {
-      updateTimer = millis();
+    manageServos(dt);
+    manageMotors(dt);
+  }
 
-      unsigned long newTime = micros();
-      float dt = (newTime - lastTime) / 1000.0;
-      lastTime = newTime;
-
-      manageServos(dt);
-      manageMotors(dt);
-    }
-
-    // Update robot status
-    // -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    if (millis() - statusTimer >= STATUS_CHECK_TIME) {
-      statusTimer = millis();
-//      pwm.setPWM(LED_PIN, 0, 400);
+  // Update robot status
+  // -- -- -- -- -- -- -- -- -- -- -- -- -- --
+  if (millis() - statusTimer >= STATUS_CHECK_TIME) {
+    statusTimer = millis();
+    //      pwm.setPWM(LED_PIN, 0, 400);
 
 #ifdef BAT_L
-      checkBatteryLevel();
+    checkBatteryLevel();
 #endif
-    }
   }
+}
