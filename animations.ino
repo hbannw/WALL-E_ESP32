@@ -42,7 +42,7 @@ void playAnimation(int animationNo) {
 
 		case 1:
 			// --- Bootup Eye Sequence ---
-			//          time,head,necT,necB,eyeR,eyeL,armL,armR
+			//          time,head,necT,necB,eyeR,eyeL,armL,armR,EybL,EybR
 			queue.push({2000,  50,  45,  90,  40,  40,  40,  40,100,100});
 			queue.push({ 700,  50,  45,  90,  40,   0,  40,  40,100,100});
 			queue.push({ 700,  50,  45,  90,   0,   0,  40,  40,1,1});
@@ -56,7 +56,7 @@ void playAnimation(int animationNo) {
 
 		case 2:
 			// --- Inquisitive motion sequence ---
-			//          time,head,necT,necB,eyeR,eyeL,armL,armR
+			//          time,head,necT,necB,eyeR,eyeL,armL,armR,EybL,EybR
 			queue.push({3000,  48,  40,   0,  35,  45,  60,  59,0,0});
 			queue.push({1500,  48,  40,  20, 100,   0,  80,  80,0,0});
 			queue.push({3000,   0,  40,  40, 100,   0,  80,  80,0,0});

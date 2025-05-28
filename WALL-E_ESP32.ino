@@ -14,13 +14,16 @@
  *    a. In the Arduino IDE, go to Sketch->Include Library->Manage Libraries
  *    b. Search for Adafruit PWM Library, and install the latest version
  * 2. Calibrate the servo motors, using the calibration sketch provided in the
- *    GitHub repository. Paste the calibrated values between lines 192 to 201.
+ *    GitHub repository. Paste the calibrated values between lines 369 to 391.
  * 3. Upload the sketch to the micro-controller, and open the serial monitor 
  *    at a baud rate of 115200.
  * 4. Additional instructions and hints can be found at:
  *    https://wired.chillibasket.com/3d-printed-wall-e/
  *
- * Modified for ESP32 and L298 motor driver
+ * Modified for ESP32 Wemos D1 R32 and L298 motor driver, used ESP32 Dev Module,
+  PSRam : Disabled, 
+  Partition Scheme : No OTA - 2Mb App + 2Mb Spiffs, 
+  Flash size : 4Mb
  * added eyebrow control
  * replaced the sound with a DFPlayer mp3 card
  * by hbannw 26th February 2024
@@ -37,7 +40,7 @@
 
 #include <Wire.h>
 #include <WiFi.h>
-#include <AsyncTCP.h>
+#include <AsyncTCP.h> // install AsyncTCP from ESP32Async for IDE 2.3.6 and above
 #include <ESPAsyncWebServer.h>
 #include <Adafruit_PWMServoDriver.h>
 #include "Queue.hpp"
@@ -79,10 +82,10 @@
 // #define PCL_GND
 
 // DFPlayer Communication
-#define DFPLAYER_RX_PIN 23  // use Resitors 1k-gnd, 660, VCC
-#define DFPLAYER_TX_PIN 19
+#define DFPLAYER_RX_PIN 25  // use Resitors 1k-gnd, 660, VCC
+#define DFPLAYER_TX_PIN 26
 
-#define AUDIO_OUTPUT_PIN 25
+//#define AUDIO_OUTPUT_PIN 25
 
 // Comment out if no pin available
 #define LED_PIN 12  // use led on the PWM board
@@ -559,7 +562,7 @@ void setup() {
   server.begin();
 
 
-  Serial.println(F("Sartup complete; entering main loop"));
+  Serial.println(F("Startup complete; entering main loop"));
 }
 
 
@@ -813,8 +816,8 @@ void evaluateSerial() {
   // Head movement
   // -- -- -- -- -- -- -- -- -- -- -- -- -- --
   else if (firstChar == 'f') {  // Head up
-    setpos[1] = preset[1][0];
-    setpos[2] = (preset[2][1] + preset[2][0]) / 2;
+    setpos[1] = preset[1][1];
+    setpos[2] = preset[2][1]; //(preset[2][1] + preset[2][0]) / 2;
   } else if (firstChar == 'g') {  // Head forward
     setpos[1] = preset[1][1];
     setpos[2] = preset[2][0];
